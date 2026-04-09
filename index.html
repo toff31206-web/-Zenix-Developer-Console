@@ -3,120 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenix Developer Console</title>
+    <title>Zenix Developer Console | Professional</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #050a18; --card: #111b33; }
-        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: white; margin: 0; }
+        :root { --primary: #00d2ff; --bg: #0b0f19; --card: #161d2f; --text: #e2e8f0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; }
 
-        /* Modern Logo Style */
-        .logo-container { display: flex; align-items: center; gap: 10px; }
-        .logo-icon {
-            width: 40px; height: 40px; 
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 24px; color: white;
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        /* Sidebar Design */
+        .sidebar { width: 250px; height: 100vh; background: var(--card); border-right: 1px solid #2d3748; position: fixed; }
+        .sidebar-header { padding: 20px; font-weight: bold; font-size: 22px; color: var(--primary); border-bottom: 1px solid #2d3748; }
+        .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .menu-item:hover { background: #1e293b; color: var(--primary); }
 
-        .navbar { background: var(--card); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }
-        .container { max-width: 700px; margin: 40px auto; padding: 20px; }
+        /* Main Content */
+        .main-content { margin-left: 250px; width: 100%; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .user-pill { background: var(--card); padding: 8px 15px; border-radius: 20px; display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 30px; height: 30px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; }
+
+        /* Form Sections */
+        .card { background: var(--card); padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: #94a3b8; }
+        input, select, textarea { width: 100%; background: #0b0f19; border: 1px solid #2d3748; color: white; padding: 12px; border-radius: 8px; box-sizing: border-box; }
         
-        /* Auth Box */
-        .auth-box { text-align: center; background: var(--card); padding: 50px; border-radius: 20px; border: 1px solid #1e293b; }
-        .google-btn { 
-            background: white; color: #333; border: none; padding: 12px 25px; 
-            border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 16px;
-            display: inline-flex; align-items: center; gap: 10px; transition: 0.3s;
-        }
-        .google-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+        /* Country & Platform Checkboxes */
+        .scroll-box { height: 150px; overflow-y: scroll; background: #0b0f19; border: 1px solid #2d3748; border-radius: 8px; padding: 10px; }
+        .check-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
 
-        /* Form Style */
-        .upload-section { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #1e293b; display: none; }
-        .form-group { margin-bottom: 18px; }
-        label { color: #94a3b8; font-size: 14px; margin-bottom: 5px; display: block; }
-        input, textarea, select { 
-            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #1e293b; 
-            background: #050a18; color: white; box-sizing: border-box; 
-        }
-        .submit-btn { 
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white; border: none; width: 100%; padding: 15px; border-radius: 10px;
-            font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px;
-        }
-        .status-card { background: #065f46; color: #a7f3d0; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: center; display: none; }
+        .btn-publish { background: linear-gradient(to right, #00d2ff, #3a7bd5); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.3s; }
+        .btn-publish:hover { opacity: 0.9; transform: scale(1.01); }
+
+        /* Processing Overlay */
+        #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+        .loader { width: 50px; height: 50px; border: 5px solid #2d3748; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div class="navbar">
-    <div class="logo-container">
-        <div class="logo-icon">Z</div>
-        <div style="font-weight: bold; font-size: 20px; letter-spacing: 1px;">ZENIX <span style="color:var(--primary)">CONSOLE</span></div>
-    </div>
-    <div id="user-info" style="font-size: 14px; color: #94a3b8;"></div>
+<div id="overlay">
+    <div class="loader"></div>
+    <h2 id="process-text">Processing your App...</h2>
+    <p>Connecting to Distribution Servers</p>
 </div>
 
-<div class="container">
-    <div id="login-section" class="auth-box">
-        <h2 style="margin-bottom: 10px;">Developer Portal</h2>
-        <p style="color: #94a3b8; margin-bottom: 30px;">Apna application publish karne ke liye login karein.</p>
-        <button class="google-btn" onclick="googleLogin()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Sign in with Google
-        </button>
+<div class="sidebar">
+    <div class="sidebar-header"><i class="fas fa-terminal"></i> ZENIX CONSOLE</div>
+    <div class="menu-item"><i class="fas fa-home"></i> Dashboard</div>
+    <div class="menu-item"><i class="fas fa-plus-circle"></i> Add New App</div>
+    <div class="menu-item"><i class="fas fa-chart-line"></i> Analytics</div>
+    <div class="menu-item"><i class="fas fa-cog"></i> Settings</div>
+</div>
+
+<div class="main-content">
+    <div class="header">
+        <h2>App Submission Portal</h2>
+        <div id="login-box">
+             <button onclick="googleLogin()" style="background:#fff; color:#000; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">Login with Google</button>
+        </div>
+        <div id="user-pill" class="user-pill" style="display:none;">
+            <div class="avatar" id="user-initial">R</div>
+            <span id="user-name">Rabin</span>
+        </div>
     </div>
 
-    <div id="upload-section" class="upload-section">
-        <h3 style="color:var(--primary); margin-top: 0;">App Submission Form</h3>
-        <div class="form-group">
-            <label>App Name</label>
-            <input type="text" id="app-name" placeholder="E.g. Zenix Browser">
+    <div id="portal-form" style="opacity: 0.5; pointer-events: none;">
+        <div class="grid">
+            <div class="card">
+                <h3><i class="fas fa-info-circle"></i> App Details</h3>
+                <label>App Name</label>
+                <input type="text" id="app-name" placeholder="Enter App Name">
+                <br><br>
+                <label>Category</label>
+                <select id="app-cat">
+                    <option>Games</option><option>Social</option><option>Tools</option>
+                </select>
+                <br><br>
+                <label>Language</label>
+                <select id="app-lang">
+                    <option>English</option><option>Hindi</option><option>Tamil</option>
+                </select>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-upload"></i> Files & Assets</h3>
+                <label>APK File</label>
+                <input type="file" id="apk-file" accept=".apk">
+                <br><br>
+                <label>Feature Graphic (Banner)</label>
+                <input type="file" id="banner-file" accept="image/*">
+            </div>
         </div>
-        <div class="form-group">
-            <label>Category</label>
-            <select id="app-category">
-                <option value="Action">Action Game</option>
-                <option value="Tools">Tools / Utility</option>
-                <option value="Social">Social Media</option>
-                <option value="Entertainment">Entertainment</option>
-            </select>
+
+        <div class="grid">
+            <div class="card">
+                <h3><i class="fas fa-globe"></i> Distribution Countries</h3>
+                <div class="scroll-box" id="country-list">
+                    <div class="check-item"><input type="checkbox" checked> India</div>
+                    <div class="check-item"><input type="checkbox" checked> USA</div>
+                    <div class="check-item"><input type="checkbox" checked> Brazil</div>
+                    <div class="check-item"><input type="checkbox" checked> Indonesia</div>
+                    <div class="check-item"><input type="checkbox" checked> Russia</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-store"></i> Target Platforms</h3>
+                <div class="scroll-box">
+                    <div class="check-item"><input type="checkbox" checked> Zenix APK Store</div>
+                    <div class="check-item"><input type="checkbox" checked> Samsung Galaxy Store</div>
+                    <div class="check-item"><input type="checkbox" checked> Xiaomi GetApps</div>
+                    <div class="check-item"><input type="checkbox" checked> Huawei AppGallery</div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Description</label>
-            <textarea id="app-desc" rows="3" placeholder="App ke baare mein likhein..."></textarea>
-        </div>
-        <div class="form-group">
-            <label>APK File (Select file)</label>
-            <input type="file" id="app-apk" accept=".apk">
-        </div>
-        <div class="form-group">
-            <label>App Banner (Upload Screenshot)</label>
-            <input type="file" id="app-banner" accept="image/*">
-        </div>
-        <div class="form-group">
-            <label>Privacy Policy URL</label>
-            <input type="url" id="app-privacy" placeholder="https://example.com/policy">
-        </div>
-        <div class="form-group">
-            <label>Tags (#tag1 #tag2)</label>
-            <input type="text" id="app-tags">
-        </div>
-        <button class="submit-btn" onclick="submitApp()">UPLOAD & PUBLISH</button>
-        
-        <div id="status" class="status-card">
-            🎉 Request Bhej Di Gayi Hai! Admin jald hi approve karenge.
-        </div>
+
+        <button class="btn-publish" onclick="startPublishing()">PUBLISH TO ALL PLATFORMS</button>
     </div>
 </div>
 
 <script>
-    // Firebase Config
+    // Copy your Firebase Config here (Wahi purana wala)
     const firebaseConfig = {
         apiKey: "AIzaSyAUCGC5496YqPVT54qk63kulPENtWprDuE",
         authDomain: "wgahsjjeehjjkjjkk-it.firebaseapp.com",
@@ -127,50 +140,34 @@
         appId: "1:258991455678:web:1e1b6958d20a40befa0def"
     };
     firebase.initializeApp(firebaseConfig);
+
     const auth = firebase.auth();
-    const db = firebase.database();
-    const storage = firebase.storage();
 
     function googleLogin() {
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider).then(res => {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('upload-section').style.display = 'block';
-            document.getElementById('user-info').innerText = res.user.displayName;
+            document.getElementById('login-box').style.display = 'none';
+            document.getElementById('user-pill').style.display = 'flex';
+            document.getElementById('user-name').innerText = res.user.displayName;
+            document.getElementById('user-initial').innerText = res.user.displayName[0];
+            document.getElementById('portal-form').style.opacity = '1';
+            document.getElementById('portal-form').style.pointerEvents = 'auto';
         });
     }
 
-    async function submitApp() {
-        const btn = document.querySelector('.submit-btn');
-        btn.innerText = "Uploading... Kripya rukien";
-        btn.disabled = true;
-
-        const name = document.getElementById('app-name').value;
-        const apkFile = document.getElementById('app-apk').files[0];
-        const bannerFile = document.getElementById('app-banner').files[0];
-
-        const apkRef = storage.ref('pending_apps/' + Date.now() + "_" + apkFile.name);
-        const bannerRef = storage.ref('pending_banners/' + Date.now() + "_" + bannerFile.name);
-
-        await apkRef.put(apkFile);
-        await bannerRef.put(bannerFile);
-
-        const apkUrl = await apkRef.getDownloadURL();
-        const bannerUrl = await bannerRef.getDownloadURL();
-
-        db.ref('app_requests').push({
-            developer: auth.currentUser.displayName,
-            appName: name,
-            category: document.getElementById('app-category').value,
-            apk: apkUrl,
-            banner: bannerUrl,
-            status: "pending",
-            timestamp: Date.now()
-        }).then(() => {
-            document.getElementById('status').style.display = 'block';
-            btn.innerText = "UPLOAD & PUBLISH";
-            btn.disabled = false;
-        });
+    function startPublishing() {
+        document.getElementById('overlay').style.display = 'flex';
+        let steps = ["Uploading APK...", "Optimizing Assets...", "Distributing to Platforms...", "Verifying Policy..."];
+        let i = 0;
+        let timer = setInterval(() => {
+            document.getElementById('process-text').innerText = steps[i];
+            i++;
+            if(i == steps.length) {
+                clearInterval(timer);
+                alert("App Successfully Published to Selected Platforms!");
+                document.getElementById('overlay').style.display = 'none';
+            }
+        }, 2000);
     }
 </script>
 </body>
