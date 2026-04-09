@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenix Developer Console</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
+    <style>
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #050a18; --card: #111b33; }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: white; margin: 0; }
+
+        /* Modern Logo Style */
+        .logo-container { display: flex; align-items: center; gap: 10px; }
+        .logo-icon {
+            width: 40px; height: 40px; 
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 24px; color: white;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .navbar { background: var(--card); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }
+        .container { max-width: 700px; margin: 40px auto; padding: 20px; }
+        
+        /* Auth Box */
+        .auth-box { text-align: center; background: var(--card); padding: 50px; border-radius: 20px; border: 1px solid #1e293b; }
+        .google-btn { 
+            background: white; color: #333; border: none; padding: 12px 25px; 
+            border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 16px;
+            display: inline-flex; align-items: center; gap: 10px; transition: 0.3s;
+        }
+        .google-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+
+        /* Form Style */
+        .upload-section { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #1e293b; display: none; }
+        .form-group { margin-bottom: 18px; }
+        label { color: #94a3b8; font-size: 14px; margin-bottom: 5px; display: block; }
+        input, textarea, select { 
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #1e293b; 
+            background: #050a18; color: white; box-sizing: border-box; 
+        }
+        .submit-btn { 
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white; border: none; width: 100%; padding: 15px; border-radius: 10px;
+            font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px;
+        }
+        .status-card { background: #065f46; color: #a7f3d0; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: center; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo-container">
+        <div class="logo-icon">Z</div>
+        <div style="font-weight: bold; font-size: 20px; letter-spacing: 1px;">ZENIX <span style="color:var(--primary)">CONSOLE</span></div>
+    </div>
+    <div id="user-info" style="font-size: 14px; color: #94a3b8;"></div>
+</div>
+
+<div class="container">
+    <div id="login-section" class="auth-box">
+        <h2 style="margin-bottom: 10px;">Developer Portal</h2>
+        <p style="color: #94a3b8; margin-bottom: 30px;">Apna application publish karne ke liye login karein.</p>
+        <button class="google-btn" onclick="googleLogin()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Sign in with Google
+        </button>
+    </div>
+
+    <div id="upload-section" class="upload-section">
+        <h3 style="color:var(--primary); margin-top: 0;">App Submission Form</h3>
+        <div class="form-group">
+            <label>App Name</label>
+            <input type="text" id="app-name" placeholder="E.g. Zenix Browser">
+        </div>
+        <div class="form-group">
+            <label>Category</label>
+            <select id="app-category">
+                <option value="Action">Action Game</option>
+                <option value="Tools">Tools / Utility</option>
+                <option value="Social">Social Media</option>
+                <option value="Entertainment">Entertainment</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="app-desc" rows="3" placeholder="App ke baare mein likhein..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>APK File (Select file)</label>
+            <input type="file" id="app-apk" accept=".apk">
+        </div>
+        <div class="form-group">
+            <label>App Banner (Upload Screenshot)</label>
+            <input type="file" id="app-banner" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label>Privacy Policy URL</label>
+            <input type="url" id="app-privacy" placeholder="https://example.com/policy">
+        </div>
+        <div class="form-group">
+            <label>Tags (#tag1 #tag2)</label>
+            <input type="text" id="app-tags">
+        </div>
+        <button class="submit-btn" onclick="submitApp()">UPLOAD & PUBLISH</button>
+        
+        <div id="status" class="status-card">
+            🎉 Request Bhej Di Gayi Hai! Admin jald hi approve karenge.
+        </div>
+    </div>
+</div>
+
+<script>
+    // Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyAUCGC5496YqPVT54qk63kulPENtWprDuE",
+        authDomain: "wgahsjjeehjjkjjkk-it.firebaseapp.com",
+        databaseURL: "https://wgahsjjeehjjkjjkk-it-default-rtdb.firebaseio.com",
+        projectId: "wgahsjjeehjjkjjkk-it",
+        storageBucket: "wgahsjjeehjjkjjkk-it.firebasestorage.app",
+        messagingSenderId: "258991455678",
+        appId: "1:258991455678:web:1e1b6958d20a40befa0def"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    const storage = firebase.storage();
+
+    function googleLogin() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).then(res => {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('upload-section').style.display = 'block';
+            document.getElementById('user-info').innerText = res.user.displayName;
+        });
+    }
+
+    async function submitApp() {
+        const btn = document.querySelector('.submit-btn');
+        btn.innerText = "Uploading... Kripya rukien";
+        btn.disabled = true;
+
+        const name = document.getElementById('app-name').value;
+        const apkFile = document.getElementById('app-apk').files[0];
+        const bannerFile = document.getElementById('app-banner').files[0];
+
+        const apkRef = storage.ref('pending_apps/' + Date.now() + "_" + apkFile.name);
+        const bannerRef = storage.ref('pending_banners/' + Date.now() + "_" + bannerFile.name);
+
+        await apkRef.put(apkFile);
+        await bannerRef.put(bannerFile);
+
+        const apkUrl = await apkRef.getDownloadURL();
+        const bannerUrl = await bannerRef.getDownloadURL();
+
+        db.ref('app_requests').push({
+            developer: auth.currentUser.displayName,
+            appName: name,
+            category: document.getElementById('app-category').value,
+            apk: apkUrl,
+            banner: bannerUrl,
+            status: "pending",
+            timestamp: Date.now()
+        }).then(() => {
+            document.getElementById('status').style.display = 'block';
+            btn.innerText = "UPLOAD & PUBLISH";
+            btn.disabled = false;
+        });
+    }
+</script>
+</body>
+</html>
