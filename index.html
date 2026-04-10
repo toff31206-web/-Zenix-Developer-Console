@@ -1,220 +1,255 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZENIX CONSOLE | Developer Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ZenixDeveloperConsole – Dev Hub</title>
+  <!-- Font Awesome (optional, for clean icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <style>
-        :root { --primary: #00d2ff; --accent: #3a7bd5; --bg: #050810; --card: #111827; --border: #1f2937; }
-        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg); color: #fff; margin: 0; display: flex; overflow-x: hidden; }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      line-height: 1.5;
+    }
 
-        /* Sidebar Design */
-        .sidebar { width: 260px; height: 100vh; background: var(--card); border-right: 1px solid var(--border); position: fixed; left: 0; top: 0; display: flex; flex-direction: column; }
-        .logo-area { padding: 30px 20px; font-weight: 800; font-size: 24px; color: var(--primary); letter-spacing: 2px; border-bottom: 1px solid var(--border); }
-        .nav-links { padding-top: 20px; flex-grow: 1; }
-        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #94a3b8; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { background: rgba(0, 210, 255, 0.1); color: var(--primary); border-left: 4px solid var(--primary); }
+    /* container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
 
-        /* Main Body */
-        .main-content { margin-left: 260px; width: calc(100% - 260px); padding: 40px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .profile-area { display: flex; align-items: center; gap: 12px; background: var(--card); padding: 8px 18px; border-radius: 50px; border: 1px solid var(--border); }
-        .user-initial { width: 32px; height: 32px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    /* header / nav */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 4rem;
+    }
 
-        /* Form Design */
-        .card { background: var(--card); border-radius: 16px; padding: 30px; border: 1px solid var(--border); margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h3 { margin-top: 0; color: var(--primary); font-size: 18px; display: flex; align-items: center; gap: 10px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; color: #94a3b8; font-size: 13px; margin-bottom: 8px; font-weight: 500; }
-        input, select, textarea { width: 100%; padding: 12px 15px; background: #080c14; border: 1px solid var(--border); border-radius: 10px; color: #fff; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
+    .logo-area h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1e293b, #3b82f6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+    }
 
-        /* Scroll Box for Countries & Platforms */
-        .scroll-list { height: 180px; overflow-y: auto; background: #080c14; padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
-        .check-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 14px; cursor: pointer; }
-        .check-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+    .logo-area p {
+      font-size: 0.85rem;
+      color: #475569;
+      margin-top: 0.25rem;
+    }
 
-        .btn-submit { width: 100%; padding: 18px; background: linear-gradient(45deg, var(--primary), var(--accent)); color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
-        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4); }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      font-weight: 500;
+    }
 
-        /* Progress Overlay */
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
-        .progress-container { width: 300px; height: 8px; background: #1f2937; border-radius: 10px; margin-top: 20px; overflow: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: var(--primary); transition: 0.3s; }
+    .nav-links a {
+      text-decoration: none;
+      color: #1e293b;
+      transition: color 0.2s;
+    }
 
-        #login-screen { position: fixed; top:0; left:0; width: 100%; height:100%; background: var(--bg); z-index: 10001; display: flex; justify-content: center; align-items: center; }
-    </style>
+    .nav-links a:hover {
+      color: #3b82f6;
+    }
+
+    /* hero / tagline */
+    .hero {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .hero h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #0f172a, #2563eb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #334155;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    /* card grid (exactly 3 cards: publish, analyze, promote) */
+    .cards-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin-bottom: 4rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem 1.8rem;
+      flex: 1;
+      min-width: 260px;
+      max-width: 340px;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s;
+      border: 1px solid #e2e8f0;
+      text-align: center;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 25px 40px -12px rgba(0,0,0,0.15);
+    }
+
+    .card-icon {
+      font-size: 2.8rem;
+      margin-bottom: 1.2rem;
+      color: #3b82f6;
+    }
+
+    .card h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #0f172a;
+    }
+
+    .card p {
+      color: #475569;
+      font-size: 1rem;
+    }
+
+    /* extra section (like additional info) */
+    .info-banner {
+      background: #eef2ff;
+      border-radius: 2rem;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .info-banner h4 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-banner p {
+      color: #1e293b;
+    }
+
+    .btn-outline {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.6rem 1.4rem;
+      border-radius: 40px;
+      border: 1px solid #3b82f6;
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 2rem;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    @media (max-width: 750px) {
+      .navbar {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero h2 {
+        font-size: 1.9rem;
+      }
+      .card {
+        max-width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="card" style="text-align: center; width: 400px;">
-        <h2 style="color:var(--primary)">ZENIX CONSOLE</h2>
-        <p style="color:#94a3b8">Developer login required to continue</p>
-        <button onclick="googleLogin()" style="width:100%; padding:15px; border-radius:10px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#000;">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Sign in with Google
-        </button>
+<div class="container">
+  <!-- navbar with new name -->
+  <div class="navbar">
+    <div class="logo-area">
+      <h1>ZenixDeveloperConsole</h1>
+      <p>developer dashboard · tools & insights</p>
     </div>
-</div>
-
-<div id="overlay">
-    <div class="user-initial" style="width:60px; height:60px; font-size:24px; margin-bottom:20px;">Z</div>
-    <h3 style="color:#fff" id="status-text">Uploading to Zenix Servers...</h3>
-    <div class="progress-container"><div class="progress-bar" id="p-bar"></div></div>
-    <p style="color:#94a3b8; font-size:12px; margin-top:10px;">Distributing to Samsung, Xiaomi & Global Stores</p>
-</div>
-
-<div class="sidebar">
-    <div class="logo-area">ZENIX</div>
     <div class="nav-links">
-        <div class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</div>
-        <div class="nav-item"><i class="fas fa-plus-square"></i> Add New App</div>
-        <div class="nav-item"><i class="fas fa-globe"></i> Global Stores</div>
-        <div class="nav-item"><i class="fas fa-chart-pie"></i> Stats</div>
-        <div class="nav-item"><i class="fas fa-cog"></i> Settings</div>
+      <a href="#">Home</a>
+      <a href="#">Dashboard</a>
+      <a href="#">Docs</a>
+      <a href="#">Support</a>
     </div>
+  </div>
+
+  <!-- Hero section -->
+  <div class="hero">
+    <h2>Your launchpad to the world</h2>
+    <p>Reach millions, track performance, and grow your apps — all from ZenixDeveloperConsole.</p>
+  </div>
+
+  <!-- main 3 cards (exactly like original: PUBLISH, ANALYZE, PROMOTE) -->
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+      <h3>PUBLISH</h3>
+      <p>Publish your apps in our catalog and reach a global audience for free.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+      <h3>ANALYZE</h3>
+      <p>Get immediate access to your app download statistics.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon"><i class="fas fa-bullhorn"></i></div>
+      <h3>PROMOTE</h3>
+      <p>Get access to our marketing services and give an extra boost to your products.</p>
+    </div>
+  </div>
+
+  <!-- extra info block (similar style as original but aligned with Zenix brand) -->
+  <div class="info-banner">
+    <h4>🔧 ZenixDeveloperConsole tools</h4>
+    <p>Analytics dashboard · API access · Beta testing · Global CDN for APKs</p>
+    <a href="#" class="btn-outline">Start now →</a>
+  </div>
+
+  <footer>
+    <p>© 2026 ZenixDeveloperConsole — built for developers, by creators.<br>
+    All tools and metrics are real‑time.</p>
+  </footer>
 </div>
 
-<div class="main-content">
-    <div class="top-bar">
-        <h2 style="margin:0">App Submission Portal</h2>
-        <div class="profile-area">
-            <span id="user-name">Developer</span>
-            <div class="user-initial" id="user-avatar">?</div>
-        </div>
-    </div>
-
-    <div class="grid-2">
-        <div class="card">
-            <h3><i class="fas fa-file-invoice"></i> General Information</h3>
-            <div class="form-group">
-                <label>Application Name</label>
-                <input type="text" id="app-name" placeholder="Enter App Name">
-            </div>
-            <div class="form-group">
-                <label>Primary Category</label>
-                <select id="app-cat">
-                    <option>Communication</option><option>Games</option><option>Tools</option><option>Social</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Default Language</label>
-                <select id="app-lang">
-                    <option>English (US)</option><option>Hindi</option><option>Tamil</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Full Description</label>
-                <textarea id="app-desc" rows="4" placeholder="Describe your app features..."></textarea>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3><i class="fas fa-cloud-upload-alt"></i> Binary & Assets</h3>
-            <div class="form-group">
-                <label>APK File (Max 2GB)</label>
-                <input type="file" id="apk-file" accept=".apk">
-            </div>
-            <div class="form-group">
-                <label>Feature Graphic / Banner (1024 x 500)</label>
-                <input type="file" id="banner-file" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label>Privacy Policy URL</label>
-                <input type="url" id="privacy-url" placeholder="https://">
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-2">
-        <div class="card">
-            <h3><i class="fas fa-map-marker-alt"></i> Distribution Countries</h3>
-            <p style="font-size:11px; color:#94a3b8; margin-bottom:10px;">Select which countries can download your app (Default: ALL)</p>
-            <div class="scroll-list">
-                <label class="check-item"><input type="checkbox" checked> All Global Countries</label>
-                <label class="check-item"><input type="checkbox" checked> India</label>
-                <label class="check-item"><input type="checkbox" checked> United States</label>
-                <label class="check-item"><input type="checkbox" checked> Brazil</label>
-                <label class="check-item"><input type="checkbox" checked> Russia</label>
-                <label class="check-item"><input type="checkbox" checked> Indonesia</label>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3><i class="fas fa-store"></i> Global Store Distribution</h3>
-            <p style="font-size:11px; color:#94a3b8; margin-bottom:10px;">App will be auto-submitted to selected stores</p>
-            <div class="scroll-list">
-                <label class="check-item"><input type="checkbox" checked> Zenix Official App Store</label>
-                <label class="check-item"><input type="checkbox" checked> Samsung Galaxy Store</label>
-                <label class="check-item"><input type="checkbox" checked> Xiaomi GetApps</label>
-                <label class="check-item"><input type="checkbox" checked> Huawei AppGallery</label>
-                <label class="check-item"><input type="checkbox" checked> Oppo / Vivo App Store</label>
-            </div>
-        </div>
-    </div>
-
-    <button class="btn-submit" onclick="submitToCloud()">Deploy & Publish to All Stores</button>
-</div>
-
-<script>
-    // Firebase Config (Aapka Connected Config)
-    const firebaseConfig = {
-        apiKey: "AIzaSyAUCGC5496YqPVT54qk63kulPENtWprDuE",
-        authDomain: "wgahsjjeehjjkjjkk-it.firebaseapp.com",
-        databaseURL: "https://wgahsjjeehjjkjjkk-it-default-rtdb.firebaseio.com",
-        projectId: "wgahsjjeehjjkjjkk-it",
-        storageBucket: "wgahsjjeehjjkjjkk-it.firebasestorage.app",
-        messagingSenderId: "258991455678",
-        appId: "1:258991455678:web:1e1b6958d20a40befa0def"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    function googleLogin() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).then(res => {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('user-name').innerText = res.user.displayName;
-            document.getElementById('user-avatar').innerText = res.user.displayName[0];
-        });
-    }
-
-    function submitToCloud() {
-        const overlay = document.getElementById('overlay');
-        const pBar = document.getElementById('p-bar');
-        const status = document.getElementById('status-text');
-        
-        overlay.style.display = 'flex';
-        let progress = 0;
-        let messages = ["Uploading APK File...", "Processing Metadata...", "Submitting to Partner Stores...", "Publishing Successful!"];
-        
-        let interval = setInterval(() => {
-            progress += 5;
-            pBar.style.width = progress + "%";
-            
-            if(progress < 30) status.innerText = messages[0];
-            else if(progress < 60) status.innerText = messages[1];
-            else if(progress < 90) status.innerText = messages[2];
-            else status.innerText = messages[3];
-
-            if(progress >= 100) {
-                clearInterval(interval);
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                    alert("App Submitted Successfully! It will be live after admin review.");
-                }, 1000);
-            }
-        }, 200);
-    }
-</script>
 </body>
 </html>
